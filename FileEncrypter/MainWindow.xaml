@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileEncrypter"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="800">
+        Title="MainWindow" Height="220" Width="600">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -36,10 +36,13 @@
         </StackPanel>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-
-            <TextBlock Height="40" FontSize="20" Margin="10" Text="Password"/>
-            <TextBox Name="txtPass" Height="40" Width="250" FontSize="20"></TextBox>
-            <RadioButton Name="rbEncrypt" Height="40" FontSize="20" Content="Encrypt" Margin="40 0"/>
+            <PasswordBox
+                Margin="20"
+                    Height="30"
+                    x:Name="txtPass"
+                    materialDesign:HintAssist.Hint="Password"
+                    materialDesign:HintAssist.HelperText="16 characters required" Width="220" />
+            <RadioButton Name="rbEncrypt" Height="40" FontSize="20" Content="Encrypt" Margin="30 0"/>
             <RadioButton Name="rbDecrypt" Height="40" FontSize="20" Content="Decrypt" Margin="40 0"/>
 
         </StackPanel>
@@ -71,7 +74,9 @@
                 Style="{StaticResource MaterialDesignOutlinedDarkButton}"
                 Content="Cancel" 
                 Foreground="Black" 
-                BorderBrush="Black" />
+                IsEnabled="False"
+                BorderBrush="Black"
+                Click="btnCancel_Click"/>
         </StackPanel>
 
     </Grid>
