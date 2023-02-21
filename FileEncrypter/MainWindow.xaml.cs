@@ -61,6 +61,9 @@ public partial class MainWindow : Window
         if (string.IsNullOrWhiteSpace(txtPass.Password))
             sb.Append("Enter encryption key");
 
+        if (txtPass.Password.Length!=16)
+            sb.Append("Password must contain 16 characters");
+
         if (sb.Length > 0)
         {
             MessageBox.Show(sb.ToString());
@@ -69,18 +72,13 @@ public partial class MainWindow : Window
 
         Progressbar.Value = 0;
 
+        _cts = new CancellationTokenSource();
 
         if (rbEncrypt.IsChecked == true)
-        {
-            _cts = new CancellationTokenSource();
             EncryptAndWrite(_cts.Token);
-        }
 
         if(rbDecrypt.IsChecked == true)
-        {
-            _cts = new CancellationTokenSource();
             DecryptAndWrite(_cts.Token);
-        }
     }
 
     //MyNameIsKepaMaxs
@@ -104,7 +102,7 @@ public partial class MainWindow : Window
             {
                 if (i % 32 == 0)
                 {
-                    if(token.IsCancellationRequested)
+                    if (token.IsCancellationRequested)
                     {
                         fs.Dispose();
                         Dispatcher.Invoke(() => File.WriteAllText(FilePath, text));
@@ -180,6 +178,7 @@ public partial class MainWindow : Window
             encryption.Key = key;
             encryption.IV = IV;
 
+
             ICryptoTransform encryptor = encryption.CreateEncryptor(encryption.Key, encryption.IV);
 
             using var msEncrypt = new MemoryStream();
@@ -205,20 +204,15 @@ public partial class MainWindow : Window
 
             ICryptoTransform decryptor = encryption.CreateDecryptor(encryption.Key, encryption.IV);
 
-            using (MemoryStream msDecrypt = new MemoryStream(encrypted))
+            using MemoryStream msDecrypt = new MemoryStream(encrypted);
+            using CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
+            using (StreamReader srDecrypt = new StreamReader(csDecrypt))
             {
-                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                {
-                    using (StreamReader srDecrypt = new StreamReader(csDecrypt))
-                    {
-                        plaintext = srDecrypt.ReadToEnd();
-                    }
-                }
+                plaintext = srDecrypt.ReadToEnd();
             }
         }
 
         return plaintext;
-
     }
 
     private void btnCancel_Click(object sender, RoutedEventArgs e)
